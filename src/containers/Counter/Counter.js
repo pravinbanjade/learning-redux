@@ -30,10 +30,17 @@ class Counter extends Component {
         return (
             <div>
                 <CounterOutput value={this.props.ctr} />
-                <CounterControl label="Increment" clicked={() => this.counterChangedHandler( 'inc' )} />
-                <CounterControl label="Decrement" clicked={() => this.counterChangedHandler( 'dec' )}  />
-                <CounterControl label="Add 5" clicked={() => this.counterChangedHandler( 'add', 5 )}  />
-                <CounterControl label="Subtract 5" clicked={() => this.counterChangedHandler( 'sub', 5 )}  />
+                <CounterControl label="Increment" clicked={this.props.onIncrementCounter} />
+                <CounterControl label="Decrement" clicked={this.props.onDecrementCounter}  />
+                <CounterControl label="Add 5" clicked={this.props.onAddCounter}  />
+                <CounterControl label="Subtract 5" clicked={this.props.onSubtractCounter}  />
+                <hr />
+                <button onClick={this.props.toStoreResult}>Store Result</button>
+                <ul>
+                  {this.props.storedResults.map( storedResult => {
+                    return <li onClick={() => this.props.toDeleteResult(storedResult.id)} key={storedResult.id}>{storedResult.value}</li>
+                  })}
+                </ul>
             </div>
         );
     }
@@ -41,8 +48,20 @@ class Counter extends Component {
 
 const mapStateToProps = state => {
   return {
-    ctr: state.counter
+    ctr: state.counter,
+    storedResults: state.results
+  }
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onIncrementCounter: () => dispatch({ type: 'INCREMENT' }),
+    onDecrementCounter: () => dispatch({ type: 'DECREMENT' }),
+    onAddCounter: () => dispatch({ type: 'ADD', value: 5 }),
+    onSubtractCounter: () => dispatch({ type: 'SUBTRACT', value: 5 }),
+    toStoreResult: () => dispatch({ type: 'STORE_RESULT' }),
+    toDeleteResult: (id) => dispatch({ type: 'DELETE_RESULT', resultElId: id }),
   }
 }
 
-export default connect(mapStateToProps)(Counter);
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
